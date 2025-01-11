@@ -1,6 +1,7 @@
 'use strict';
 const dotenv = require('dotenv');
 dotenv.config({ path: 'C:/Users/rmisu/OneDrive/Desktop/api/paymentApp/.env' });
+const { queryInvoice } = require('./queryInvoice'); // Import the queryInvoice function
 
 const consumerKey = process.env.consumerKey;
 const consumerSecret = process.env.consumerSecret;
@@ -147,11 +148,42 @@ app.get('/disconnect', function (req, res) {
     }
 
     // Notify the client that they are disconnected (could redirect or reload)
-res.send(`
-  <!DOCTYPE html><html><head></head><body>
-      <h1>You have been successfully disconnected from QuickBooks.</h1>
-      <script>window.opener.location.reload();window.close();</script></body></html>
-`);
+    res.send(`
+      <!DOCTYPE html><html><head></head><body>
+        <h1>You have been successfully disconnected from QuickBooks.</h1>
+        <script>window.opener.location.reload();window.close();</script>
+      </body></html>
+    `);
   });
 });
 
+// Add a route to call the queryInvoice function
+app.get('/fetchInvoice', async (req, res) => {
+  console.log('Entered /fetchInvoice route');
+  try {
+    if (!qbo || !realmId) {
+      return res.status(400).send('Error: QBO instance or Realm ID is not available.');
+    }
+
+    console.log('Fetching invoice data...');
+    const invoiceSummary = await queryInvoice(qbo, realmId); // Pass qbo and realmId directly
+
+    if (invoiceSummary.length === 0) {
+      console.warn('No invoice data found.');
+      return res.send('No invoice data found.');
+    }
+
+    console.log('Invoice data fetched successfully:', invoiceSummary);
+    res.send('Invoice data fetched successfully!');
+  } catch (err) {
+    console.error('Error fetching invoices:', err);
+    res.status(500).send('Error fetching invoices.');
+  }
+});
+
+/*
+module.exports = {
+  getQboInstance: () => qbo,
+  getRealmId: () => realmId,
+};
+*/
