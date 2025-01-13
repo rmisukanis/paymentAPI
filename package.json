@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Example Express application for Intuit's node.js client for QuickBooks V3 API.",
   "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
   "keywords": [
     "Intuit",
     "QuickBooks",
