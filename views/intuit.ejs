@@ -9,44 +9,60 @@
     intuit.ipp.anywhere.setup({
       grantUrl: 'http://localhost:' + <%= port %> + '/requestToken',
       datasources: {
-        quickbooks : true,  // set to false if NOT using Quickbooks API
-        payments : false    // set to true if using Payments API
+        quickbooks: true,  // set to false if NOT using Quickbooks API
+        payments: false    // set to true if using Payments API
       }
     });
 
-    // Function to call the 'queryInvoice' endpoint
-    function queryInvoice() {
-      fetch('/queryInvoice', {
-        method: 'GET',
-      })
-      .then(response => response.json())
-      .then(data => {
+    // Function to send the entered SQL query to the 'queryInvoice' endpoint
+    async function queryInvoice() {
+      const sqlQueryInvoice = document.getElementById('sqlQueryInvoice').value; // Get value from input box
+      try {
+        const response = await fetch('/queryInvoice', {
+          method: 'POST', // Use POST to send data securely
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ query: sqlQueryInvoice }) // Send the SQL query in the request body
+        });
+        const data = await response.json();
         console.log("Invoice Data:", data);
         // Optionally, display the data on the page or process it
-      })
-      .catch(error => {
+      } catch (error) {
         console.error("Error during queryInvoice:", error);
-      });
+      }
+    }
+
+    // Function to send the entered SQL query to the 'queryInvoice' endpoint
+    async function queryPayment() {
+      const sqlQueryPayment = document.getElementById('sqlQueryPayment').value; // Get value from input box
+      try {
+        const response = await fetch('/queryPayment', {
+          method: 'POST', // Use POST to send data securely
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ query: sqlQueryPayment }) // Send the SQL query in the request body
+        });
+        const data = await response.json();
+        console.log("Payment Data:", data);
+        // Optionally, display the data on the page or process it
+      } catch (error) {
+        console.error("Error during queryInvoice:", error);
+      }
     }
   </script>
 </head>
 <body>
   <ipp:connectToIntuit></ipp:connectToIntuit><br>
   
-  <!-- Add a button to trigger the queryInvoice function -->
-  <button onclick="queryInvoice()">Fetch Invoices</button>
+  <!-- Input field for SQL query -->
+  <label for="sqlQueryInvoice">Enter SQL Query:</label>
+  <input type="text" id="sqlQueryInvoice" placeholder="Enter your Invoice SQL query here">
+  <button onclick="queryInvoice()">Fetch Invoices</button><br>
 
-<script>
-  async function queryInvoice() {
-    try {
-      const response = await fetch('/fetchInvoice');
-      const data = await response.text();
-      console.log(data);
-    } catch (err) {
-      console.error('Error fetching invoices:', err);
-    }
-  }
-</script>
-
+  <label for="sqlQueryPayment">Enter SQL Query:</label>
+  <input type="text" id="sqlQueryPayment" placeholder="Enter your Payment SQL query here">
+  <button onclick="queryPayment()">Fetch Payments</button>
 </body>
 </html>

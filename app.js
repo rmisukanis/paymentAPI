@@ -1,7 +1,8 @@
 'use strict';
 const dotenv = require('dotenv');
 dotenv.config({ path: 'C:/Users/rmisu/OneDrive/Desktop/api/paymentApp/.env' });
-const { queryInvoice } = require('./queryInvoice'); // Import the queryInvoice function
+const { queryInvoice } = require('./queryInvoice'); 
+const { queryPayment } = require('./queryPayment'); 
 
 const consumerKey = process.env.consumerKey;
 const consumerSecret = process.env.consumerSecret;
@@ -133,21 +134,17 @@ app.get('/callback', function (req, res) {
 
 // ** Launch URL ** - Success page after OAuth authentication
 app.get('/success', (req, res) => {
-  // You can customize this message, showing a success page, or other relevant details.
   res.send('Authentication successful! You can now access your QuickBooks data.');
 });
 
 // Disconnect route
 app.get('/disconnect', function (req, res) {
-  // Destroy session (i.e., log out the user)
   req.session.destroy(function (err) {
     if (err) {
       console.error('Error clearing session:', err);
       res.status(500).send('Error during disconnect');
       return;
     }
-
-    // Notify the client that they are disconnected (could redirect or reload)
     res.send(`
       <!DOCTYPE html><html><head></head><body>
         <h1>You have been successfully disconnected from QuickBooks.</h1>
@@ -157,29 +154,62 @@ app.get('/disconnect', function (req, res) {
   });
 });
 
-// Add a route to call the queryInvoice function
-app.get('/fetchInvoice', async (req, res) => {
-  console.log('Entered /fetchInvoice route');
+// Route to handle dynamic SQL queries for Invoice
+app.post('/queryInvoice', async (req, res) => {
+  const { query } = req.body; // Extract SQL query from request body
+
+  if (!query) {
+    return res.status(400).send('Error: No query provided.');
+  }
+
   try {
     if (!qbo || !realmId) {
       return res.status(400).send('Error: QBO instance or Realm ID is not available.');
     }
 
-    console.log('Fetching invoice data...');
-    const invoiceSummary = await queryInvoice(qbo, realmId); // Pass qbo and realmId directly
+    console.log('Executing query:', query);
+    const invoiceSummary = await queryInvoice(qbo, realmId, query); // Pass query to the function
 
-    if (invoiceSummary.length === 0) {
-      console.warn('No invoice data found.');
-      return res.send('No invoice data found.');
+    if (!invoiceSummary || invoiceSummary.length === 0) {
+      console.warn('No data found for the given query.');
+      return res.send('No data found.');
     }
 
-    console.log('Invoice data fetched successfully:', invoiceSummary);
-    res.send('Invoice data fetched successfully!');
+    res.json(invoiceSummary); // Send the fetched data as JSON
   } catch (err) {
-    console.error('Error fetching invoices:', err);
-    res.status(500).send('Error fetching invoices.');
+    console.error('Error executing query:', err);
+    res.status(500).send('Error executing query.');
   }
 });
+
+// Route to handle dynamic SQL queries
+app.post('/queryPayment', async (req, res) => {
+  const { query } = req.body; // Extract SQL query from request body
+
+  if (!query) {
+    return res.status(400).send('Error: No query provided.');
+  }
+
+  try {
+    if (!qbo || !realmId) {
+      return res.status(400).send('Error: QBO instance or Realm ID is not available.');
+    }
+
+    console.log('Executing query:', query);
+    const paymentSummary = await queryPayment(qbo, realmId, query); // Pass query to the function
+
+    if (!paymentSummary || paymentSummary.length === 0) {
+      console.warn('No data found for the payment query.');
+      return res.send('No data found.');
+    }
+
+    res.json(paymentSummary); // Send the fetched data as JSON
+  } catch (err) {
+    console.error('Error executing query:', err);
+    res.status(500).send('Error executing query.');
+  }
+});
+
 
 /*
 module.exports = {

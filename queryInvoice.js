@@ -1,14 +1,15 @@
 
 /*
+//query=select * from Invoice where id = '228'
 const { InsertPayments,  InsertInvoices, ensureDatabaseExists,
   ensurePaymentTableExists } = require('./dbconnect/database');
 */
 const request = require('request');
 
-//, insertInvoices
-async function queryInvoice(qbo, realmId) {
+// Function to query invoices from QuickBooks
+async function queryInvoice(qbo, realmId, sqlQuery = "SELECT * FROM Invoice") {
   console.log("Querying invoices with realmId:", realmId);
-  
+
   if (!qbo) {
     throw new Error('QuickBooks Online instance (qbo) is not available.');
   }
@@ -18,9 +19,10 @@ async function queryInvoice(qbo, realmId) {
   }
 
   console.log('Using Realm ID:', realmId);
+  console.log('SQL Query:', sqlQuery);
 
   const minorversion = 'minorversion=73';
-  const url = `https://sandbox-quickbooks.api.intuit.com/v3/company/${realmId}/query?query=select * from Invoice where id = '228'&${minorversion}`;
+  const url = `https://sandbox-quickbooks.api.intuit.com/v3/company/${realmId}/query?query=${encodeURIComponent(sqlQuery)}&${minorversion}`;
   const headers = {
     Accept: 'application/json',
     Authorization: `Bearer ${qbo.token}`, // Use qbo.token directly
@@ -29,20 +31,21 @@ async function queryInvoice(qbo, realmId) {
   try {
     // Fetch invoices from QuickBooks API
     const response = await fetch(url, { headers });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to fetch invoice. Status: ${response.status}`);
     }
 
     const body = await response.json();
-    const invoice = body.QueryResponse?.Invoice || [];
+    const invoices = body.QueryResponse?.Invoice || [];
 
-    if (!invoice.length) {
+    if (!invoices.length) {
       console.warn('No invoices found in the API response.');
       return []; // Return an empty array if no invoices found
     }
 
-    const invoiceSummary = invoice.map(invoice => ({
+    // Summarize invoice data
+    const invoiceSummary = invoices.map((invoice) => ({
       InvoiceId: invoice.Id || 0,
       CustomerName: invoice.CustomerRef?.name || 'No',
       CustomerId: invoice.CustomerRef?.value || 0,
@@ -55,14 +58,14 @@ async function queryInvoice(qbo, realmId) {
       DueDate: invoice.DueDate || '1970-12-12',
     }));
 
-    console.log(invoiceSummary);
+    console.log('Invoice Summary:', invoiceSummary);
     return invoiceSummary;
-    
   } catch (err) {
     console.error('Error fetching invoices:', err);
     throw err; // Rethrow error to handle it upstream
   }
 }
+
 
 /*
   try {
