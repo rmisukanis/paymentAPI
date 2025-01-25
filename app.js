@@ -66,7 +66,7 @@ function generateAntiForgery(session) {
 app.get('/requestToken', function (req, res) {
   var redirecturl = QuickBooks.AUTHORIZATION_URL +
     '?client_id=' + consumerKey +
-    '&redirect_uri=' + encodeURIComponent('http://localhost:3000/callback') + // dev:('http://localhost:' + port + '/callback/') pro:'https://paymentapi-ot2f.onrender.com/callback'
+    '&redirect_uri=' + encodeURIComponent(:'https://paymentapi-ot2f.onrender.com/callback') + // dev:('http://localhost:' + port + '/callback/') pro:'https://paymentapi-ot2f.onrender.com/callback'
     '&scope=com.intuit.quickbooks.accounting' +
     '&response_type=code' +
     '&state=' + generateAntiForgery(req.session);
