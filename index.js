@@ -83,7 +83,7 @@ QuickBooks.setOauthVersion = function (version, useSandbox) {
   }, discoveryUrl);
 };
 
-QuickBooks.setOauthVersion('1.0');
+QuickBooks.setOauthVersion('2.0');
 
 /**
  * Node.js client encapsulating access to the QuickBooks V3 Rest API. An instance
