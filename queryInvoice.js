@@ -22,8 +22,6 @@ async function queryInvoice(qbo, realmId, sqlQuery = "SELECT * FROM Invoice") {
   console.log('Using Realm ID:', realmId);
   console.log('SQL Query:', sqlQuery);
   console.log('OAuth Token:', qbo.token); 
-  const baseUrl = req.protocol + '://' + req.get('host');
-  console.log("Base URL: ", baseUrl); // This will log the base URL of the request
 
 
 
