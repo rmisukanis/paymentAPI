@@ -128,7 +128,7 @@ app.get('/callback', function (req, res) {
       realmId, // Use the saved Realm ID
       false, // Use sandbox account //should be false
       true, // Enable debugging
-      4, // Minor version
+      75, // Minor version (was 4)
       '2.0', // OAuth version
       accessToken.refresh_token, // Refresh token
     );
