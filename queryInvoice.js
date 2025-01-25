@@ -21,12 +21,9 @@ async function queryInvoice(qbo, realmId, sqlQuery = "SELECT * FROM Invoice") {
 
   console.log('Using Realm ID:', realmId);
   console.log('SQL Query:', sqlQuery);
-  console.log('OAuth Token:', qbo.token); // Log the token
-  console.log('Requesting URL:', `https://quickbooks.api.intuit.com/v3/company/${realmId}/invoice/${invoiceId}?minorversion=${minorversion}`);
-  console.log('Request Headers:', {
-    'Authorization': `Bearer ${qbo.token}`,
-    'Accept': 'application/json',
-});
+  console.log('OAuth Token:', qbo.token); 
+  const baseUrl = req.protocol + '://' + req.get('host');
+  console.log("Base URL: ", baseUrl); // This will log the base URL of the request
 
 
 
