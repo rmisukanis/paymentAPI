@@ -7,7 +7,7 @@ const { postDeposit } = require('./postBatchDeposit');
 const { createTables, sequelize, InsertPayments } = require('./dbconnect/post_database');
 //const { InsertPayments,  InsertInvoices, ensureDatabaseExists,
 //  ensurePaymentTableExists } = require('./dbconnect/database');
-
+//reset
 const consumerKey = process.env.consumerKey;
 const consumerSecret = process.env.consumerSecret;
 
