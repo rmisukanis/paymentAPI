@@ -7,9 +7,11 @@
   <script type="text/javascript" src="<%= appCenter %>/Content/IA/intuit.ipp.anywhere-1.3.1.js"></script>
   <script src="/main.js"></script>
   <script>
+    //http://localhost:3000/requestToken
+    const requestToken = 'https://paymentapi-ot2f.onrender.com/requestToken'
     intuit.ipp.anywhere.setup({
       //'http://localhost:3000/requestToken
-      grantUrl: 'https://paymentapi-ot2f.onrender.com/requestToken', //pro 'https://paymentapi-ot2f.onrender.com/requestToken'
+      grantUrl: requestToken, //pro 'https://paymentapi-ot2f.onrender.com/requestToken'
       datasources: {
         quickbooks: true,  // set to false if NOT using Quickbooks API
         payments: false    // set to true if using Payments API

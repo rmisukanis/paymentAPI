@@ -10,6 +10,7 @@ const { createTables, sequelize, InsertPayments } = require('./dbconnect/post_da
 //reset
 const consumerKey = process.env.consumerKey;
 const consumerSecret = process.env.consumerSecret;
+const callback = 'https://paymentapi-ot2f.onrender.com/callback' //dev`http://localhost:${port}/callback`
 
 var http = require('http');
 var port = process.env.PORT || 3000;
@@ -66,7 +67,7 @@ function generateAntiForgery(session) {
 app.get('/requestToken', function (req, res) {
   var redirecturl = QuickBooks.AUTHORIZATION_URL +
     '?client_id=' + consumerKey +
-    '&redirect_uri=' + encodeURIComponent('https://paymentapi-ot2f.onrender.com/callback') + // dev:('http://localhost:' + port + '/callback/') pro:'https://paymentapi-ot2f.onrender.com/callback'
+    '&redirect_uri=' + encodeURIComponent(callback) + // dev:('http://localhost:' + port + '/callback/') pro:'https://paymentapi-ot2f.onrender.com/callback'
     '&scope=com.intuit.quickbooks.accounting' +
     '&response_type=code' +
     '&state=' + generateAntiForgery(req.session);
@@ -97,7 +98,7 @@ app.get('/callback', function (req, res) {
     form: {
       grant_type: 'authorization_code',
       code: req.query.code,
-      redirect_uri: 'https://paymentapi-ot2f.onrender.com/callback', // dev`http://localhost:${port}/callback` pro: 'https://paymentapi-ot2f.onrender.com/callback'
+      redirect_uri: callback, // dev`http://localhost:${port}/callback` pro: 'https://paymentapi-ot2f.onrender.com/callback'
     },
   };
 
