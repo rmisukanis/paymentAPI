@@ -1,6 +1,7 @@
 
 /*
 //query=select * from Invoice where id = '228'
+
 const { InsertPayments,  InsertInvoices, ensureDatabaseExists,
   ensurePaymentTableExists } = require('./dbconnect/database');
 */
@@ -70,7 +71,7 @@ async function queryInvoice(qbo, realmId, sqlQuery = "SELECT * FROM Invoice") {
 /*
   try {
     console.log('Fetching invoices from QBO...');
-    const invoiceSummary = await fetchInvoices();
+    const invoiceSummary = await queryInvoice();
 
     if (invoiceSummary.length === 0) {
       console.warn('No invoice data to insert into the database.');

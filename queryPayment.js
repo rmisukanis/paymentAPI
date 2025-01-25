@@ -8,6 +8,7 @@ const request = require('request');
 
 // Function to query payments from QuickBooks
 async function queryPayment(qbo, realmId, sqlQuery = "SELECT * FROM Payment") {
+  let conlog = [];
   console.log("Querying payments with realmId:", realmId);
 
   if (!qbo) {
@@ -20,6 +21,7 @@ async function queryPayment(qbo, realmId, sqlQuery = "SELECT * FROM Payment") {
 
   console.log('Using Realm ID:', realmId);
   console.log('SQL Query:', sqlQuery);
+  
 
   const minorversion = 'minorversion=73';
   const url = `https://sandbox-quickbooks.api.intuit.com/v3/company/${realmId}/query?query=${encodeURIComponent(sqlQuery)}&${minorversion}`;

@@ -25,6 +25,7 @@
     "express-session": "^1.11.3",
     "fast-xml-parser": "^4.5.1",
     "node-quickbooks": "2.0.0",
+    "pg": "^8.13.1",
     "uuid": "^11.0.5"
   }
 }

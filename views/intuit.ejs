@@ -5,11 +5,11 @@
  
    <link rel="stylesheet" type="text/css" href="style.css">
   <script type="text/javascript" src="<%= appCenter %>/Content/IA/intuit.ipp.anywhere-1.3.1.js"></script>
-  
+  <script src="/main.js"></script>
   <script>
     intuit.ipp.anywhere.setup({
       //'http://localhost:' + <%= port %> + '/requestToken'
-      grantUrl: 'https://paymentapi-ot2f.onrender.com/requestToken',
+      grantUrl: 'http://localhost:3000/requestToken', //pro 'https://paymentapi-ot2f.onrender.com/requestToken'
       datasources: {
         quickbooks: true,  // set to false if NOT using Quickbooks API
         payments: false    // set to true if using Payments API
@@ -49,13 +49,113 @@
           body: JSON.stringify({ query: sqlQueryPayment }) // Send the SQL query in the request body
         });
         const data = await response.json();
-        console.log("Payment Data:", data);
-        // Display the data inside the result box
-        document.getElementById('result-box').innerHTML = JSON.stringify(data, null, 2);
+
+        // Iterate over the array
+     data.forEach((item, index) => {
+        // Create a new paragraph for each item in the array
+        const itemElement = document.createElement('div'); // Use div instead of p for flexibility
+
+        // Check if the item is an object
+        if (typeof item === 'object' && item !== null) {
+            // Iterate over the object's key-value pairs
+            itemElement.innerHTML += '{'
+            for (const key in item) {
+                if (item.hasOwnProperty(key)) {
+                    // Add each key-value pair with <br> after it
+                    const logEntry = `${key}: <span class="key">${item[key]}</span><br>`;
+                    itemElement.innerHTML += logEntry; // Append to item element
+                }
+            }
+            itemElement.innerHTML += '}'
+        } else {
+            // For non-objects (just primitive values like strings, numbers), display them
+            itemElement.innerHTML = `Item ${index + 1}: ${item}`;
+        }
+
+        // Append the item element to the result-box
+        document.getElementById('result-box').appendChild(itemElement);
+    });
+        
+  
+        return data;
       } catch (error) {
         console.error("Error during queryInvoice:", error);
       }
     }
+
+
+  // Function to send payments data to the '/postPayments' route and post it to the database
+  async function PostPayments() {
+        const sqlQueryPayment = document.getElementById('sqlQueryPayment').value; 
+        try {
+          const response = await fetch('/postPayments', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ query: sqlQueryPayment }) // Send the SQL query in the request body
+          });
+
+          const result = await response.json();
+          console.log(result.message); // Log the success message
+          alert(result.message); // Alert success message to the user
+        } catch (error) {
+          console.error("Error during InsertPayments:", error);
+          alert('Error posting payments to the database.');
+        }
+      }
+
+// Declare the global deposits array
+let deposits = [];
+    
+// Function to handle CSV file upload
+async function handleFileUpload() {
+      const fileInput = document.getElementById('csvFile');
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        alert("Please select a file.");
+        return;
+      }
+  
+      const reader = new FileReader();
+      
+      reader.onload = function(event) {
+        const csvData = event.target.result;
+        const parsedData = parseCSV(csvData);
+        deposits = parsedData;
+        //console.log(deposits);
+        console.log(deposits)
+        consoleParseCSV(deposits);
+      };
+      
+      reader.readAsText(file);
+    }
+
+// Function to send deposit data to the '/postDeposit' route and post it to the database
+async function InsertDeposit(deposits) {
+        console.log('intuit.ejs ', deposits)
+        // Send the payments data to the server to insert it into the database
+        try {
+          const response = await fetch('/postDeposit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ deposits }) // Send the payment data in the request body
+          });
+
+          const result = await response.json();
+          console.log(result.message); // Log the success message
+          alert(result.message); // Alert success message to the user
+        } catch (error) {
+          console.error("Error during InsertDeposits:", error);
+          alert('Error posting deposits into quickbooks.');
+        }
+      }
+
+
+
   </script>
 </head>
 <body>
@@ -68,11 +168,27 @@
 
   <label for="sqlQueryPayment">Enter SQL Query:</label>
   <input type="text" id="sqlQueryPayment" placeholder="Enter your Payment SQL query here">
-  <button onclick="queryPayment()">Fetch Payments</button>
-
+  <button onclick="queryPayment()">Fetch Payments</button><br>
+  <div id="submitButtons">
+    <button onclick="PostPayments()">Post Payments To Database</button>
+      <input type="file" id="csvFile" accept=".csv">
+      <button onclick="handleFileUpload()">Upload CSV</button>
+    <button id="postDeposits">Post Deposits To Quickbooks</button>
+    <button onclick="clearResultBox()">Clear Results</button><br>
+ </div>
+ <script>
+      document.getElementById('postDeposits').addEventListener('click', async function () {
+        console.log('Deposits just before submitting:', deposits); // Check if deposits is populated here
+        if (deposits.length === 0) {
+          alert("No deposits to submit.");
+          return;
+        }
+      
+        await InsertDeposit(deposits); // Call InsertDeposit only after confirming deposits is populated
+      });
+ </script>
   <div id="result-box" class="result-box">
-    <!-- This will be dynamically populated -->
+    This will be dynamically populated
   </div>
-  
 </body>
 </html>

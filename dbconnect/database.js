@@ -1,6 +1,5 @@
 const mysql = require('mysql2');
-const dotenv = require('dotenv');
-dotenv.config({ path: 'C:/Users/rmisu/OneDrive/Desktop/api/paymentApp/.env' });
+require('dotenv').config();
 
 const pool = mysql.createPool({
     host: process.env.MYSQL_HOST,
@@ -8,6 +7,7 @@ const pool = mysql.createPool({
     password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_DATABASE,
     multipleStatements: true,
+    database: process.env.MYSQL_DATABASE,
 }).promise();
 
 async function testConnection() {
@@ -25,15 +25,12 @@ testConnection();
 // Database Creation
 async function ensureDatabaseExists() {
     const createDatabaseQuery = `CREATE DATABASE IF NOT EXISTS quickBooks_app;`;
-    const useDatabaseQuery = `USE quickBooks_app;`;
 
     try {
         // Create database if it doesn't exist
         await pool.query(createDatabaseQuery);
         console.log('Database "quickBooks_app" ensured to exist.');
 
-        // Use database
-        await pool.query(useDatabaseQuery);
     } catch (error) {
         console.error('Error ensuring the database exists:', error);
         throw error;
@@ -151,6 +148,7 @@ async function InsertInvoices(invoices) {
 }
 
 // Call the Functions
+///*
 ensureDatabaseExists()
     .then(() => console.log('Database setup complete.'))
     .catch(error => console.error('Error during database setup:', error));
@@ -158,7 +156,7 @@ ensureDatabaseExists()
 ensurePaymentTableExists()
     .then(() => console.log('Table setup complete.'))
     .catch(error => console.error('Error during table setup:', error));
-
+//*/
 // Export the functions
 module.exports = {
     ensureDatabaseExists,

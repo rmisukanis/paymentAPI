@@ -3,6 +3,10 @@ const dotenv = require('dotenv');
 dotenv.config({ path: 'C:/Users/rmisu/OneDrive/Desktop/api/paymentApp/.env' });
 const { queryInvoice } = require('./queryInvoice'); 
 const { queryPayment } = require('./queryPayment'); 
+const { postDeposit } = require('./postBatchDeposit'); 
+const { createTables, sequelize, InsertPayments } = require('./dbconnect/post_database');
+//const { InsertPayments,  InsertInvoices, ensureDatabaseExists,
+//  ensurePaymentTableExists } = require('./dbconnect/database');
 
 const consumerKey = process.env.consumerKey;
 const consumerSecret = process.env.consumerSecret;
@@ -62,7 +66,7 @@ function generateAntiForgery(session) {
 app.get('/requestToken', function (req, res) {
   var redirecturl = QuickBooks.AUTHORIZATION_URL +
     '?client_id=' + consumerKey +
-    '&redirect_uri=' + encodeURIComponent('https://paymentapi-ot2f.onrender.com/callback') + // dev:('http://localhost:' + port + '/callback/') pro:'https://paymentapi-ot2f.onrender.com/callback'
+    '&redirect_uri=' + encodeURIComponent('http://localhost:3000/callback') + // dev:('http://localhost:' + port + '/callback/') pro:'https://paymentapi-ot2f.onrender.com/callback'
     '&scope=com.intuit.quickbooks.accounting' +
     '&response_type=code' +
     '&state=' + generateAntiForgery(req.session);
@@ -93,7 +97,7 @@ app.get('/callback', function (req, res) {
     form: {
       grant_type: 'authorization_code',
       code: req.query.code,
-      redirect_uri: `https://paymentapi-ot2f.onrender.com/callback`, // dev`http://localhost:${port}/callback` pro: `https://paymentapi-ot2f.onrender.com/callback`
+      redirect_uri: 'http://localhost:3000/callback', // dev`http://localhost:${port}/callback` pro: `https://paymentapi-ot2f.onrender.com/callback`
     },
   };
 
@@ -155,7 +159,17 @@ app.get('/disconnect', function (req, res) {
   });
 });
 
-// Route to handle dynamic SQL queries for Invoice
+//Database Creating
+createTables()
+  .then(() => {
+    console.log('App is ready to start');
+  })
+  .catch((err) => {
+    console.error('Error during table creation:', err);
+    process.exit(1); // Exit the process if table creation fails
+  });
+
+// Following are interacting with get and post with backend
 app.post('/queryInvoice', async (req, res) => {
   const { query } = req.body; // Extract SQL query from request body
 
@@ -183,7 +197,7 @@ app.post('/queryInvoice', async (req, res) => {
   }
 });
 
-// Route to handle dynamic SQL queries
+// SQL for payment query
 app.post('/queryPayment', async (req, res) => {
   const { query } = req.body; // Extract SQL query from request body
 
@@ -210,6 +224,63 @@ app.post('/queryPayment', async (req, res) => {
     res.status(500).send('Error executing query.');
   }
 });
+
+//post payments into the database
+app.post('/postPayments', async (req, res) => {
+  const { query } = req.body;
+
+  if (!query) {
+    return res.status(400).send('Error: No query provided.');
+  }
+
+  try {
+    if (!qbo || !realmId) {
+      return res.status(400).send('Error: QBO instance or Realm ID is not available.');
+    }
+
+    console.log('Executing query:', query);
+    const paymentSummary = await queryPayment(qbo, realmId, query);
+
+    if (!paymentSummary || paymentSummary.length === 0) {
+      console.warn('No data found for the payment query.');
+      return res.send('No data found.');
+    }
+
+    console.log('Payment Summary:', paymentSummary);
+
+    // Insert payments into the database
+    const sendPayment = await InsertPayments(paymentSummary);
+
+    console.log('Insert Payments Response:', sendPayment);
+
+    if (sendPayment) {
+      return res.json({ message: 'Payment successfully posted!' });
+    } else {
+      return res.status(500).json({ message: 'Failed to insert payments into the database.' });
+    }
+  } catch (err) {
+    console.error('Error executing query:', err);
+    return res.status(500).json({ message: 'Error executing query.', error: err.message });
+  }
+});
+
+
+//post deposit to Quickbooks
+app.post('/postDeposit', async (req, res) => {
+  const deposits = req.body.deposits;
+  console.log('PostDeposit: ', deposits)
+  try {
+    // Insert payments data into the database
+    await postDeposit(qbo, realmId, deposits); // Posts the deposit
+    res.json({ message: 'Deposits posted successfully!' });
+  } catch (error) {
+    console.error("Error positing deposits:", error);
+    res.status(500).send('Error posting deposits.');
+  }
+});
+
+
+
 
 
 /*

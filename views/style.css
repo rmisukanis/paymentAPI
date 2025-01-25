@@ -10,3 +10,23 @@
   color: #aaa;  /* Change text color when it's empty */
   font-style: italic;
 }
+
+#sqlQueryInvoice {
+  font-size: 12px;  /* Increase font size */
+  padding: 10px;     /* Add padding inside the input box */
+  width: 30%;       /* Make the input take up 100% of the container width (or set a specific width) */
+  height: 40px;      /* Increase height to make the input box taller */
+  box-sizing: border-box; /* Ensure padding is included in the width and height calculation */
+}
+#sqlQueryPayment {
+  font-size: 12px;  /* Increase font size */
+  padding: 10px;     /* Add padding inside the input box */
+  width: 30%;       /* Make the input take up 100% of the container width (or set a specific width) */
+  height: 40px;      /* Increase height to make the input box taller */
+  box-sizing: border-box; /* Ensure padding is included in the width and height calculation */
+}
+
+.key {
+  color: green;
+}
+
