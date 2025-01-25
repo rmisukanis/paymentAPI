@@ -125,7 +125,7 @@ app.get('/callback', function (req, res) {
       accessToken.access_token, // OAuth access token
       false, // No token secret for OAuth 2.0
       realmId, // Use the saved Realm ID
-      false, // Use sandbox account //should be false
+      true, // Use sandbox account //should be false
       true, // Enable debugging
       4, // Minor version
       '2.0', // OAuth version

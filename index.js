@@ -19,7 +19,7 @@ var request   = require('request'),
 module.exports = QuickBooks
 
 QuickBooks.APP_CENTER_BASE = 'https://appcenter.intuit.com';
-QuickBooks.V3_ENDPOINT_BASE_URL = 'https://quickbooks.api.intuit.com'; //'https://sandbox-quickbooks.api.intuit.com/v3/company/'
+QuickBooks.V3_ENDPOINT_BASE_URL = 'https://sandbox-quickbooks.api.intuit.com'; //'https://sandbox-quickbooks.api.intuit.com/v3/company/' 'https://quickbooks.api.intuit.com';
 QuickBooks.QUERY_OPERATORS = ['=', 'IN', '<', '>', '<=', '>=', 'LIKE'];
 QuickBooks.TOKEN_URL = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
 QuickBooks.REVOKE_URL = 'https://developer.api.intuit.com/v2/oauth2/tokens/revoke';
@@ -111,7 +111,7 @@ function QuickBooks(consumerKey, consumerSecret, token, tokenSecret, realmId, us
   this.endpoint = this.useSandbox
     ? 'https://sandbox-quickbooks.api.intuit.com'  // Use sandbox URL
     : 'https://quickbooks.api.intuit.com';         // Use production URL
-  this.minorversion = eval(prefix + 'minorversion') || 65;
+  this.minorversion = eval(prefix + 'minorversion') || 75;
   this.oauthversion = eval(prefix + 'oauthversion') || '1.0a';
   this.refreshToken = eval(prefix + 'refreshToken') || null;
   if (!eval(prefix + 'tokenSecret') && this.oauthversion !== '2.0') {
