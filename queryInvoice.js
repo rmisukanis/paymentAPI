@@ -22,6 +22,7 @@ async function queryInvoice(qbo, realmId, sqlQuery = "SELECT * FROM Invoice") {
   console.log('Using Realm ID:', realmId);
   console.log('SQL Query:', sqlQuery);
   console.log('OAuth Token:', qbo.token); 
+  console.log('qbo endopoint:', qbo.endpoint); 
 
 
 
