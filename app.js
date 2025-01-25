@@ -97,7 +97,7 @@ app.get('/callback', function (req, res) {
     form: {
       grant_type: 'authorization_code',
       code: req.query.code,
-      redirect_uri: 'http://localhost:3000/callback', // dev`http://localhost:${port}/callback` pro: `https://paymentapi-ot2f.onrender.com/callback`
+      redirect_uri: 'https://paymentapi-ot2f.onrender.com/callback', // dev`http://localhost:${port}/callback` pro: 'https://paymentapi-ot2f.onrender.com/callback'
     },
   };
 
