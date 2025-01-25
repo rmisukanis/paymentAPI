@@ -180,6 +180,7 @@ app.post('/queryInvoice', async (req, res) => {
 
   try {
     if (!qbo || !realmId) {
+      console.error('QBO instance or Realm ID not available');  // Added log for missing QBO or Realm ID
       return res.status(400).send('Error: QBO instance or Realm ID is not available.');
     }
 
@@ -188,7 +189,7 @@ app.post('/queryInvoice', async (req, res) => {
 
     if (!invoiceSummary || invoiceSummary.length === 0) {
       console.warn('No data found for the given query.');
-      return res.send('No data found.');
+      return res.json({ message: 'No data found.' }); // Ensure this is JSON
     }
 
     res.json(invoiceSummary); // Send the fetched data as JSON
