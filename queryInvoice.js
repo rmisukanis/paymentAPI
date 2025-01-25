@@ -21,8 +21,16 @@ async function queryInvoice(qbo, realmId, sqlQuery = "SELECT * FROM Invoice") {
 
   console.log('Using Realm ID:', realmId);
   console.log('SQL Query:', sqlQuery);
+  console.log('OAuth Token:', qbo.token); // Log the token
+  console.log('Requesting URL:', `https://quickbooks.api.intuit.com/v3/company/${realmId}/invoice/${invoiceId}?minorversion=${minorversion}`);
+  console.log('Request Headers:', {
+    'Authorization': `Bearer ${qbo.token}`,
+    'Accept': 'application/json',
+});
 
-  const minorversion = 'minorversion=73';
+
+
+  const minorversion = 'minorversion=75';
   const url = `https://sandbox-quickbooks.api.intuit.com/v3/company/${realmId}/query?query=${encodeURIComponent(sqlQuery)}&${minorversion}`;
   const headers = {
     Accept: 'application/json',

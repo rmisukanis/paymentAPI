@@ -172,6 +172,7 @@ createTables()
 
 // Following are interacting with get and post with backend
 app.post('/queryInvoice', async (req, res) => {
+ 
   const { query } = req.body; // Extract SQL query from request body
 
   if (!query) {
