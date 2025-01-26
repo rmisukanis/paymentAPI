@@ -10,7 +10,7 @@ const { createTables, sequelize, InsertPayments } = require('./dbconnect/post_da
 //reset
 const consumerKey = process.env.consumerKey;
 const consumerSecret = process.env.consumerSecret;
-const callback = `http://localhost:3000/callback` //dev`http://localhost:${port}/callback` 'https://paymentapi-ot2f.onrender.com/callback'
+const callback = 'https://paymentapi-ot2f.onrender.com/callback' //dev`http://localhost:${port}/callback` 'https://paymentapi-ot2f.onrender.com/callback'
 
 var http = require('http');
 var port = process.env.PORT || 3000;
@@ -138,7 +138,7 @@ app.get('/callback', function (req, res) {
       accessToken.access_token, // OAuth access token
       false, // No token secret for OAuth 2.0
       realmId, // Use the saved Realm ID
-      true, // Use sandbox account //should be false
+      false, // Use sandbox account //should be false
       true, // Enable debugging
       75, // Minor version (was 4)
       '2.0', // OAuth version
