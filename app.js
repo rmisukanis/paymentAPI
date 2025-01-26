@@ -116,7 +116,10 @@ app.get('/callback', function (req, res) {
       console.error('Error during token exchange:', err);
       res.status(500).send('Error exchanging tokens');
       return;
-    }
+    } 
+
+    console.log('Response body from token exchange:', body);  // Log the full response body to inspect
+    console.log('Response Status Code:', response.statusCode); 
 
     const parsedToken = JSON.parse(body);
 
