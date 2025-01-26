@@ -88,6 +88,15 @@ app.get('/callback', function (req, res) {
 
   const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
 
+    // Log the token endpoint and request body
+    const tokenUrl = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';  // Confirm this is correct for production
+    console.log('Token Endpoint URL:', tokenUrl); // Log the token endpoint
+    console.log('Request Body:', {
+      grant_type: 'authorization_code',
+      code: req.query.code,
+      redirect_uri: callback, // dev: 'http://localhost:{port}/callback', prod: 'https://paymentapi-ot2f.onrender.com/callback'
+    }); // Log the request body
+
   const postBody = {
     url: 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer',
     headers: {
