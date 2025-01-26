@@ -102,7 +102,7 @@ app.get('/callback', function (req, res) {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: 'Basic ' + auth,
+      Authorization: 'Bearer ' + accessToken.access_token, //'Basic ' + auth
     },
     form: {
       grant_type: 'authorization_code',
